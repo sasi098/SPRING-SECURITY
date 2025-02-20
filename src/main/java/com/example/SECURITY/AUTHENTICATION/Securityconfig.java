@@ -9,37 +9,48 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+
+import javax.sql.DataSource;
 
 
 @Configuration
 @EnableWebSecurity
 public class Securityconfig  {
     @Bean
-
-    //adding users
-    InMemoryUserDetailsManager userDetailsManager(){
-        UserDetails sasank = User.builder()
-                .username("sasank")
-                .password("{noop}sasi")
-                .roles("admin")
-                .build();
+    UserDetailsManager UserDetailsManager(DataSource dataSource){
+        return new JdbcUserDetailsManager(dataSource);
 
 
-        UserDetails lohith = User.builder()
-                .username("lohith")
-                .password("{noop}lohith")
-                .roles("employee","manager")
-                .build();
+//    @Bean
+//
+//    //adding users
+//    InMemoryUserDetailsManager userDetailsManager(){
+//        UserDetails sasank = User.builder()
+//                .username("sasank")
+//                .password("{noop}sasi")
+//                .roles("admin")
+//                .build();
+//
+//
+//        UserDetails lohith = User.builder()
+//                .username("lohith")
+//                .password("{noop}lohith")
+//                .roles("employee","manager")
+//                .build();
+//
+//        UserDetails avinash = User.builder()
+//                .username("avinash")
+//                .password("{noop}avinash")
+//                .roles("employee")
+//                .build();
+//
+//        return new InMemoryUserDetailsManager(sasank,lohith,avinash);
 
-        UserDetails avinash = User.builder()
-                .username("avinash")
-                .password("{noop}avinash")
-                .roles("employee")
-                .build();
 
-        return new InMemoryUserDetailsManager(sasank,lohith,avinash);
     }
 
     @Bean
