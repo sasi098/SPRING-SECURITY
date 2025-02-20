@@ -1,11 +1,20 @@
 package com.example.SECURITY.AUTHENTICATION;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
+
+@Configuration
+@EnableWebSecurity
 public class Securityconfig  {
     @Bean
 
@@ -21,7 +30,7 @@ public class Securityconfig  {
         UserDetails lohith = User.builder()
                 .username("lohith")
                 .password("{noop}lohith")
-                .roles("employee,manager")
+                .roles("employee","manager")
                 .build();
 
         UserDetails avinash = User.builder()
@@ -31,7 +40,22 @@ public class Securityconfig  {
                 .build();
 
         return new InMemoryUserDetailsManager(sasank,lohith,avinash);
+    }
 
+    @Bean
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+        http.authorizeHttpRequests(configurer -> configurer
+                .requestMatchers(HttpMethod.GET, "/get/employees").hasAnyRole("employee","admin")
+                .requestMatchers(HttpMethod.GET,"api/employees/**").hasAnyRole("employee","admin")
+                .requestMatchers(HttpMethod.POST,"/api/employees/").hasRole("manager")
+                .requestMatchers(HttpMethod.PUT,"/api/employees").hasRole("manager")
+                .requestMatchers(HttpMethod.DELETE,"/api/employees").hasRole("admin")
 
+        );
+        http.httpBasic(Customizer.withDefaults());
+
+        http.csrf(csrf -> csrf.disable());
+
+        return http.build();
     }
 }
